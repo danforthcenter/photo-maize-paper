@@ -1,0 +1,280 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+First, load in the required packages. 
+
+```{r}
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(pcvr)
+library(emmeans)
+library(ggpubr)
+library(multcomp)
+```
+
+
+
+```{r}
+#read in the files to dataframes
+
+single_value_traits_1  <- read.csv("~/Library/CloudStorage/OneDrive-DDPSC/Murphy_Lab/writing/2024/2024-JoVE/github-upload/data-analysis/results-photo-studio-single-value-traits.csv")
+single_value_traits_1$id <- as.factor(single_value_traits_1$id)
+single_value_traits_1 <- dplyr::select(single_value_traits_1, -camera, -imgtype, -zoom, -exposure, -gain, -frame, -rotation, -lifter, -barcode, -treatment, -velocity, -cartag, -measurementlabel)
+
+head(single_value_traits_1)
+
+key <- read_xlsx("~/Library/CloudStorage/OneDrive-DDPSC/Murphy_Lab/writing/2024/2024-JoVE/github-upload/data-analysis/metadata.xlsx")
+head(key)
+key$id <- as.factor(key$id)
+key$Water_treatment <- factor(key$Water_treatment, levels = c("well-watered", "drought"))
+key$Treatment <- paste(key$Temperature_treatment, key$Water_treatment, sep="_")
+head(key)
+
+
+single_value_traits_2 <- single_value_traits_1  %>%
+  filter(sample == "default_1")%>%
+  mutate(area_cm2 = area_above_reference_pixels*4/43*4/43) %>%
+  mutate(height_cm = height_above_reference_pixels*4/43 ) %>%
+  mutate(width_cm = width_pixels*4/43 ) %>%
+  left_join(.,key, by = "id") 
+
+single_value_traits_2$hue_circular_mean_degrees <- as.numeric(single_value_traits_2$hue_circular_mean_degrees)
+
+head(single_value_traits_2)
+
+multi_value_traits_1 <- read.csv("~/Library/CloudStorage/OneDrive-DDPSC/Murphy_Lab/writing/2024/2024-JoVE/github-upload/data-analysis/results-photo-studio-multi-value-traits.csv")
+multi_value_traits_1$id <- as.factor(multi_value_traits_1$id)
+head(multi_value_traits_1)
+multi_value_traits_1 <- dplyr::select(multi_value_traits_1, -camera, -imgtype, -zoom, -exposure, -gain, -frame, -rotation, -lifter, -barcode, -treatment, -velocity, -cartag, -measurementlabel)
+
+multi_value_traits_2 <- multi_value_traits_1  %>%
+  filter(sample == "default_1") %>%
+  left_join(.,key, by = "id") 
+
+
+colorscheme <- c("#009E73","#CC79A7", "#E69F00",  
+           "#0072B2", "#D55E00")
+           
+```
+
+
+
+
+```{r}
+full_model = lm(area_cm2 ~ Treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+
+# get (adjusted) weight means per group
+model_means <- emmeans(object = full_model,
+                       specs = "Treatment")
+
+# add letters to each mean
+model_means_cld <- cld(object = model_means,
+                       adjust = "Tukey",
+                       Letters = letters,
+                       alpha = 0.05)
+
+# show output
+model_means_cld
+
+
+plot1 <- single_value_traits_2 %>%
+  inner_join(.,model_means_cld, by = "Treatment")
+head(plot1)
+
+plot1 <-  ggplot(plot1, aes(x = Treatment, y = area_cm2, color = Temperature_treatment, linetype = Water_treatment)) +
+  geom_boxplot(alpha = 0) +
+  geom_jitter(alpha=0.2) +
+  stat_summary(fun = mean, geom = "text", aes(label = .group, group = Treatment), 
+               position = position_dodge(width = 0), vjust = -3) +
+  theme_bw() +
+  labs(y = expression(leaf~area~(cm^2)), color = "Temperature Treatment", linetype = "Water Treatment") +
+  theme(text = element_text(size = 11), axis.ticks.x = element_blank(), legend.key = element_blank()) + 
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values=colorscheme) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
+plot1
+
+```
+
+
+
+
+```{r}
+
+full_model = lm(height_cm ~ Treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+
+# get (adjusted) weight means per group
+model_means <- emmeans(object = full_model,
+                       specs = "Treatment")
+
+# add letters to each mean
+model_means_cld <- cld(object = model_means,
+                       adjust = "Tukey",
+                       Letters = letters,
+                       alpha = 0.05)
+
+# show output
+model_means_cld
+
+
+plot2 <- single_value_traits_2 %>%
+  inner_join(.,model_means_cld, by = "Treatment")
+head(plot2)
+
+plot2 <-  ggplot(plot2, aes(x = Treatment, y = height_cm, color = Temperature_treatment, linetype = Water_treatment)) +
+  geom_boxplot(alpha = 0) +
+  geom_jitter(alpha=0.2) +
+  stat_summary(fun = mean, geom = "text", aes(label = .group, group = Treatment), 
+               position = position_dodge(width = 0), vjust = -3) +
+  theme_bw() +
+  labs(y = "plant height (cm)", color = "Temperature Treatment", linetype = "Water Treatment") +
+  theme(text = element_text(size = 11), axis.ticks.x = element_blank(), legend.key = element_blank()) + 
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values=colorscheme) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
+plot2
+
+```
+
+
+
+```{r}
+full_model = lm(width_cm ~ Treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+
+# get (adjusted) weight means per group
+model_means <- emmeans(object = full_model,
+                       specs = "Treatment")
+
+# add letters to each mean
+model_means_cld <- cld(object = model_means,
+                       adjust = "Tukey",
+                       Letters = letters,
+                       alpha = 0.05)
+
+# show output
+model_means_cld
+
+
+plot3 <- single_value_traits_2 %>%
+  inner_join(.,model_means_cld, by = "Treatment")
+head(plot3)
+
+plot3 <-  ggplot(plot3, aes(x = Treatment, y = width_cm, color = Temperature_treatment, linetype = Water_treatment)) +
+  geom_boxplot(alpha = 0) +
+  geom_jitter(alpha=0.2) +
+  stat_summary(fun = mean, geom = "text", aes(label = .group, group = Treatment), 
+               position = position_dodge(width = 0), vjust = -3) +
+  theme_bw() +
+  labs(y = "plant width (cm)", color = "Temperature Treatment", linetype = "Water Treatment") +
+  theme(text = element_text(size = 11), axis.ticks.x = element_blank(), legend.key = element_blank()) + 
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values=colorscheme) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
+plot3
+
+```
+
+
+
+```{r}
+full_model = lm(hue_circular_mean_degrees ~ Treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+
+# get (adjusted) weight means per group
+model_means <- emmeans(object = full_model,
+                       specs = "Treatment")
+
+# add letters to each mean
+model_means_cld <- cld(object = model_means,
+                       adjust = "Tukey",
+                       Letters = letters,
+                       alpha = 0.05)
+
+# show output
+model_means_cld
+
+
+plot4 <- single_value_traits_2 %>%
+  inner_join(.,model_means_cld, by = "Treatment")
+head(plot4)
+
+plot4 <-  ggplot(plot4, aes(x = Treatment, y = hue_circular_mean_degrees, color = Temperature_treatment, linetype = Water_treatment)) +
+  geom_boxplot(alpha = 0) +
+  geom_jitter(alpha=0.2) +
+  stat_summary(fun = mean, geom = "text", aes(label = .group, group = Treatment), 
+               position = position_dodge(width = 0), vjust = -3) +
+  theme_bw() +
+  labs(y = "mean plant hue (degrees)", color = "Temperature Treatment", linetype = "Water Treatment") +
+  theme(text = element_text(size = 11), axis.ticks.x = element_blank(), legend.key = element_blank()) + 
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values=colorscheme) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
+plot4
+
+```
+
+```{r}
+plot5 <- single_value_traits_2 %>%
+  ggplot(aes(x = area_cm2, y = end_manual_plant_wet_weight_g)) +
+  geom_smooth(method=lm, se=FALSE, col='pink', size=2) +
+  geom_point() +
+  theme_bw() +
+  labs(y = "plant weight (g)") +
+  labs(x = expression(leaf~area~(cm^2))) +
+  stat_regline_equation(label.y = 650, aes(label = ..eq.label..)) +
+  stat_regline_equation(label.y = 600, aes(label = ..rr.label..)) +
+  theme(text = element_text(size = 10), legend.key = element_blank()) + 
+  theme(legend.position="bottom", text = element_text(size = 11))
+plot5
+```
+
+```{r}
+frem(single_value_traits_2,
+  des = c("Treatment"),
+  phenotypes = c(
+    "area_pixels", "area_above_reference_pixels", "area_below_reference_pixels",
+    "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees",
+    "ellipse_eccentricity_none", "ellipse_major_axis_pixels", "ellipse_minor_axis_pixels",
+    "height_pixels", "height_above_reference_pixels", "height_below_reference_pixels", "hue_circular_mean_degrees", "perimeter_pixels", "solidity_none", "width_pixels"
+  ), cor = TRUE, returnData = FALSE, combine = FALSE, markSingular = TRUE, time = NULL
+)
+
+
+```
+
+```{r}
+head(multi_value_traits_2)
+
+plot6 <- pcv.joyplot(multi_value_traits_2,
+  index = "hue_frequencies",
+  group = c("Treatment"), method = NULL, compare = NULL) + 
+  labs(x = "Hue (degrees)") +
+  scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) 
+plot6
+
+```
+
