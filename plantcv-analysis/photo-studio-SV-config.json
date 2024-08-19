@@ -1,0 +1,115 @@
+{
+    "input_dir": "/Users/katiemurphy/Library/CloudStorage/OneDrive-DDPSC/Pheno_Core/Ditech/KM103/2024-07-19_endpoint-photos",
+    "json": "/Users/katiemurphy/Library/CloudStorage/OneDrive-DDPSC/Pheno_Core/Ditech/KM103/2024-07-25_results.json",
+    "filename_metadata": ["other","id","timestamp"],
+    "workflow": "/Users/katiemurphy/Library/CloudStorage/OneDrive-DDPSC/Pheno_Core/Ditech/KM103/workflow.py",
+    "img_outdir": "/Users/katiemurphy/Library/CloudStorage/OneDrive-DDPSC/Pheno_Core/Ditech/KM103/output-images",
+    "include_all_subdirs": true,
+    "tmp_dir": ".",
+    "start_date": null,
+    "end_date": null,
+    "imgformat": "jpg",
+    "delimiter": "_",
+    "metadata_filters": {},
+    "timestampformat": "%Y-%m-%dT%H-%M-%S",
+    "writeimg": false,
+    "other_args": {},
+    "groupby": [
+        "filepath"
+    ],
+    "group_name": "auto",
+    "cleanup": true,
+    "append": true,
+    "cluster": "LocalCluster",
+    "cluster_config": {
+        "n_workers": 1,
+        "cores": 1,
+        "memory": "1GB",
+        "disk": "1GB",
+        "log_directory": null,
+        "local_directory": null,
+        "job_extra_directives": null
+    },
+    "metadata_terms": {
+        "camera": {
+            "label": "camera identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "imgtype": {
+            "label": "image type",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "zoom": {
+            "label": "camera zoom setting",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "exposure": {
+            "label": "camera exposure setting",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "gain": {
+            "label": "camera gain setting",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "frame": {
+            "label": "image series frame identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "rotation": {
+            "label": "sample rotation in degrees",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "lifter": {
+            "label": "imaging platform height setting",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "timestamp": {
+            "label": "datetime of image",
+            "datatype": "<class 'datetime.datetime'>",
+            "value": null
+        },
+        "id": {
+            "label": "image identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "barcode": {
+            "label": "plant barcode identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "treatment": {
+            "label": "treatment identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "velocity": {
+            "label": "velocity identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "cartag": {
+            "label": "plant carrier identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "measurementlabel": {
+            "label": "experiment identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        },
+        "other": {
+            "label": "other identifier",
+            "datatype": "<class 'str'>",
+            "value": "none"
+        }
+    }
+}
