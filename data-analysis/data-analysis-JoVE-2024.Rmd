@@ -2,7 +2,7 @@
 title: "R Notebook"
 output: html_notebook
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 First, load in the required packages. 
@@ -47,7 +47,7 @@ single_value_traits_2$hue_circular_mean_degrees <- as.numeric(single_value_trait
 
 head(single_value_traits_2)
 
-multi_value_traits_1 <- read.csv("~/Library/CloudStorage/OneDrive-DDPSC/Murphy_Lab/writing/2024/2024-JoVE/github-upload/data-analysis/results-photo-studio-multi-value-traits.csv")
+multi_value_traits_1 <- read.csv("results-photo-studio-multi-value-traits.csv")
 multi_value_traits_1$id <- as.factor(multi_value_traits_1$id)
 head(multi_value_traits_1)
 multi_value_traits_1 <- dplyr::select(multi_value_traits_1, -camera, -imgtype, -zoom, -exposure, -gain, -frame, -rotation, -lifter, -barcode, -treatment, -velocity, -cartag, -measurementlabel)
@@ -62,6 +62,11 @@ colorscheme <- c("#009E73","#CC79A7", "#E69F00",
            
 ```
 
+```{r}
+full_model = lm(area_cm2 ~ Temperature_treatment*Water_treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+```
 
 
 
@@ -107,6 +112,11 @@ plot1
 ```
 
 
+```{r}
+full_model = lm(height_cm ~ Temperature_treatment*Water_treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+```
 
 
 ```{r}
@@ -151,6 +161,12 @@ plot2
 
 ```
 
+```{r}
+full_model = lm(width_cm ~ Temperature_treatment*Water_treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+```
+
 
 
 ```{r}
@@ -193,6 +209,14 @@ plot3 <-  ggplot(plot3, aes(x = Treatment, y = width_cm, color = Temperature_tre
 plot3
 
 ```
+
+
+```{r}
+full_model = lm(hue_circular_mean_degrees ~ Temperature_treatment*Water_treatment, single_value_traits_2)
+summary(full_model)
+anova(full_model)
+```
+
 
 
 
