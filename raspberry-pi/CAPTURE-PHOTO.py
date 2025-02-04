@@ -42,7 +42,7 @@ class App(object):
         self.save_location.set("local")
 
         Radiobutton(frame, text="Save Locally", variable=self.save_location, value="local").pack(anchor=W)
-        Radiobutton(frame, text="Save to Public Drive", variable=self.save_location, value="public").pack(anchor=W)
+        Radiobutton(frame, text="Save to Cloud Storage", variable=self.save_location, value="public").pack(anchor=W)
         Radiobutton(frame, text="Save to Both", variable=self.save_location, value="both").pack(anchor=W)
 
     def takePic(self):
@@ -59,7 +59,7 @@ class App(object):
             # Modify local path and public path to store the acquired images
             local_path = f"/home/pi/Desktop/PHOTOS/{filename}"
             # Write your server or cloud storage path here
-            public_path = f"/mnt/public/YOUR_PUBLIC_DRIVE_FOLDER/{filename}"
+            public_path = f"/mnt/public/YOUR_CLOUD_STORAGE_FOLDER/{filename}"
 
             # Capture the image
             temp_path = f"/tmp/{filename}"
@@ -72,7 +72,7 @@ class App(object):
 
             if self.save_location.get() in ["public", "both"]:
                 shutil.copy2(temp_path, public_path)
-                print(f"Image saved to public drive: {public_path}")
+                print(f"Image saved to Cloud Storage: {public_path}")
                 
            # Remove the temporary file
             os.remove(temp_path)
